@@ -72,10 +72,12 @@ public class Logic {
 
         for(int i=0;i<9;i++){
             if(map.containsKey(i+" "+c)){
+                //if(i==8 && c==4) System.out.println(ele+" is removed from "+(i+" "+c));
                 map.get(i+" "+c).remove(ele);
             }
             if(map.containsKey(r+" "+i)){
-                map.get(r+" "+c).remove(ele);
+                //if(r==8 && i==4) System.out.println(ele+" is removed from "+(r+" "+c));
+                map.get(r+" "+i).remove(ele);
             }
         }
 
@@ -84,6 +86,7 @@ public class Logic {
         for(int i=row;i<=row+2;i++){
             for(int j=col;j<col+2;j++){
                 if(map.containsKey(i+" "+j)){
+                    if(i==8 && j==4) System.out.println(ele+" is removed from "+(i+" "+c));
                     map.get(i+" "+j).remove(ele);
                 }
             }

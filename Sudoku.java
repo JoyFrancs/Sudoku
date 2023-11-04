@@ -14,7 +14,7 @@ class Sudoku {
         sc.close();
     }
 
-    static void printInput(){
+    static void printGrid(){
         System.out.println("Grid =");
         for(int i=0;i<9;i++){
             for (int j = 0; j < 9; j++) {
@@ -44,9 +44,18 @@ class Sudoku {
         for (int i = 0; i < n; i++) {
             getInput();
             //grid = g;
-            Solve s = new Solve();
-            printInput();
+                //1 Solve s = new Solve();
+            //printGrid();
+            Solve s;
+            int count=1;
+            do{
+                s = new Solve();
             s.solve();
+            System.out.println("Solving "+count);
+            ++count;
+            } while(s.valid && s.hasSinglePossibleValue());
+
+            printGrid();
         }
         sc.close();
     }

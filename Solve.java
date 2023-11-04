@@ -6,6 +6,8 @@ public class Solve {
     int[] cols  = new int[9];
     int[] boxes = new int[9];
 
+    boolean valid;
+
     HashMap<String,HashSet<Integer>> map= new HashMap<>();
      
     Solve(){
@@ -13,8 +15,8 @@ public class Solve {
     }
 
     void solve(){
-        boolean valid=isValid();
-        System.out.println("valid ="+valid);
+        valid = isValid();
+        //System.out.println("valid ="+valid);
             if(valid){
                 int box=maxBox();
                 int count=0;
@@ -27,7 +29,7 @@ public class Solve {
                     box=count;
                 li = l.getEmptyCells(box);
                     System.out.println("starting box="+box);
-                    System.out.println("Empty boxes are at indices");
+                   // System.out.println("Empty boxes are at indices");
                 for(int i=0;i<li.size();i++){
                     //System.out.print(li.get(i));
 
@@ -39,17 +41,20 @@ public class Solve {
 
                     map.put(li.get(i),l.possibleValues(t1,t2));
 
-                    
-
-                    //System.out.print("possible val At index="+li.get(i)+" = ");
-
-                    //printSet(map.get(li.get(i)));
 
                     if(map.get(li.get(i)).size()==1){
-                        System.out.print("possible val At index="+li.get(i)+" = ");
+                        
                         printSet(map.get(li.get(i)));
-                        l.removeEle(t1, t2,map.get(li.get(i)).iterator().next());
+                        int ele=map.get(li.get(i)).iterator().next();
+
+                        //add the unique element to the grid
+                        grid[t1][t2] = (char) (ele+'0');
+
+                        //removes the filled element from the possibilites in the empty cells of the row,col,box
+                        l.removeEle(t1, t2,ele);
+
                     }
+                    
 /*block for testing remove element */
                     //System.out.println("Enter element to remove");
                     
@@ -65,11 +70,12 @@ public class Solve {
             }while(count<9);
 
             System.out.println("Solution----");
-            printMap();    
+             printMap(); 
             }
             else{
                 System.out.println("The entered sudoku is invalid");
             }
+            
     }
 
     //for testing
@@ -85,9 +91,18 @@ public class Solve {
     //forTesting
     void printMap(){
         for(Map.Entry<String,HashSet<Integer>> entry: map.entrySet()){
+            //if(entry.getKey().split(" ")[0].equals("8")){
                 System.out.print("possible val At index="+entry.getKey()+" = ");
                 printSet(entry.getValue());
+            //}
         }
+    }
+
+    boolean hasSinglePossibleValue(){
+        for(Map.Entry<String,HashSet<Integer>> entry: map.entrySet()){
+            if(entry.getValue().size()==1) return true;
+        }
+        return false;
     }
 
     int maxBox(){
