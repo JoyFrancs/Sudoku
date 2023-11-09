@@ -12,7 +12,6 @@ public class Logic {
         this.rows=rows;
         this.cols = cols;
         this.boxes = boxes;
-
         this.map =map;
     }
 

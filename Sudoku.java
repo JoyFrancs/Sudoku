@@ -46,15 +46,8 @@ class Sudoku {
             //grid = g;
                 //1 Solve s = new Solve();
             //printGrid();
-            Solve s;
-            int count=1;
-            do{
-                s = new Solve();
+            Solve s = new Solve();
             s.solve();
-            System.out.println("Solving "+count);
-            ++count;
-            } while(s.valid && s.hasSinglePossibleValue());
-
             printGrid();
         }
         sc.close();

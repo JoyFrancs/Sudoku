@@ -1,163 +1,88 @@
 import java.util.*;
 
-public class Solve {
-    char[][] grid = new char[9][9];
-    int[] rows  = new int[9];
-    int[] cols  = new int[9];
-    int[] boxes = new int[9];
-
-    boolean valid;
-
-    HashMap<String,HashSet<Integer>> map= new HashMap<>();
-     
-    Solve(){
+public class Solve extends SolvingMethods {
+    // instance variables are present in the parent class
+    Solve() {
         this.grid = Sudoku.grid;
     }
 
-    void solve(){
+    void solve() {
+        do {
+            solvingSteps();
+        } while (valid && gridHasSinglePossibleValue());
+    }
+
+    void solvingSteps() {
+        refreshInstanceVariable();
         valid = isValid();
-        //System.out.println("valid ="+valid);
-            if(valid){
-                int box=maxBox();
-                int count=0;
-                    System.out.println("out starting box="+box);
-                Logic l= new Logic(rows,cols,boxes,map);
-                List<String> li;
-                
-                do{
-                    //if(count>0) 
-                    box=count;
-                li = l.getEmptyCells(box);
-                    System.out.println("starting box="+box);
-                   // System.out.println("Empty boxes are at indices");
-                for(int i=0;i<li.size();i++){
-                    //System.out.print(li.get(i));
+        // System.out.println("valid ="+valid);
+        if (valid) {
+            int box = 0; // = maxBox();
+            logic = new Logic(rows, cols, boxes, map);
+            List<String> li;
 
-                    String s[]= li.get(i).split(" ");
-                    int t1=Integer.parseInt(s[0]);
-                    int t2=Integer.parseInt(s[1]);
+            while(box<9){
+                li = logic.getEmptyCells(box);
+                for (int i = 0; i < li.size(); i++) {
+                    String s[] = li.get(i).split(" ");
+                    int t1 = Integer.parseInt(s[0]);
+                    int t2 = Integer.parseInt(s[1]);
 
-                    //System.out.println( " compare t1="+t1+" t2="+t2);
-
-                    map.put(li.get(i),l.possibleValues(t1,t2));
-
-
-                    if(map.get(li.get(i)).size()==1){
-                        
-                        printSet(map.get(li.get(i)));
-                        int ele=map.get(li.get(i)).iterator().next();
-
-                        //add the unique element to the grid
-                        grid[t1][t2] = (char) (ele+'0');
-
-                        //removes the filled element from the possibilites in the empty cells of the row,col,box
-                        l.removeEle(t1, t2,ele);
-
+                    // hash set of possible values at row=t1, col=t2
+                    var tmpSet = logic.possibleValues(t1, t2);
+                    // checking if there is only one possibility in a cell
+                    if (hasSinglePossibleValue(tmpSet)) {
+                        addEleToGridRemovPossibility(tmpSet, t1, t2);
+                    } else {
+                        // maping the row,col with its possible values
+                        map.put(li.get(i), tmpSet);
                     }
-                    
-/*block for testing remove element */
-                    //System.out.println("Enter element to remove");
-                    
-                    //int n=6;
-                    //System.out.println("row already has "+n+" = "+((rows[t1]&1<<n)>0));
-                    //l.removeEle(t1, t2, n);
-                    //printSet(map.get(li.get(i)));
-                    //System.out.println("row has "+n+" = "+((rows[t1]&1<<n)>0));
-
                 }
-                ++count;
-                if(count==box) count++;
-            }while(count<9);
-
-            System.out.println("Solution----");
-             printMap(); 
+                ++box;
             }
-            else{
-                System.out.println("The entered sudoku is invalid");
-            }
-            
-    }
-
-    //for testing
-    void printSet(HashSet<Integer> set){
-        Iterator<Integer> iterator = set.iterator();
-        //System.out.print("possible val At index="+li.get(i)+" = ");
-                    while(iterator.hasNext()){
-                        System.out.print(iterator.next()+" ");
-                    }
-                    System.out.println();
-    }
-
-    //forTesting
-    void printMap(){
-        for(Map.Entry<String,HashSet<Integer>> entry: map.entrySet()){
-            //if(entry.getKey().split(" ")[0].equals("8")){
-                System.out.print("possible val At index="+entry.getKey()+" = ");
-                printSet(entry.getValue());
-            //}
+            // printMap();
+        } else {
+            System.out.println("The entered sudoku is invalid");
         }
     }
 
-    boolean hasSinglePossibleValue(){
+    //check the size of the hashset is one or not
+    public boolean hasSinglePossibleValue(HashSet<Integer> hset){
+        return hset.size()==1? true:false;
+    }
+
+    //checks the map and gives true if any empty cell has single possible value
+    public boolean gridHasSinglePossibleValue(){
         for(Map.Entry<String,HashSet<Integer>> entry: map.entrySet()){
             if(entry.getValue().size()==1) return true;
         }
         return false;
     }
-
-    int maxBox(){
-        int maxBox =0,max=0;
-
-        for(int i=0;i<boxes.length;i++){
-            
-            int count= Integer.toBinaryString(boxes[i]).replaceAll("0", "").length();
-            if(max<count){
-                max = count;
-                maxBox = i;
-                //System.out.println("playing i="+i+" count="+count+" val="+boxes[i]);
-            }
-        }        
-        return maxBox;
+    
+    void refreshInstanceVariable() {
+        rows = new int[9];
+        cols = new int[9];
+        boxes = new int[9];
     }
 
-    boolean isValid(){
-        //best space complexcity for valid sudoku problem in lc
-        int N = 9;
 
-        for (int r = 0; r < N; r++) {
-            for (int c = 0; c < N; c++) {
-                // Check if the position is filled with number
-                if (grid[r][c] == '0') {
-                    continue;
-                }
-                int val = grid[r][c] - '0';
-
-                //System.out.println("char ="+grid[r][c] +"val ="+val+" pow"+(1<<(val)));
-                
-                int pos = 1 << (val);
-
-                // Check the row
-                if ((rows[r] & pos) > 0) {
-                    return false;
-                }
-                rows[r] |= pos;
-
-                // Check the column
-                if ((cols[c] & pos) > 0) {
-                    return false;
-                }
-                cols[c] |= pos;
-
-                // Check the box
-                int idx = (r / 3) * 3 + c / 3;
-                if ((boxes[idx] & pos) > 0) {
-                    return false;
-                }
-                boxes[idx] |= pos;
-            }
-
-            //System.out.println("Initial row="+Arrays.toString(rows));
+    // for testing
+    void printSet(HashSet<Integer> set) {
+        Iterator<Integer> iterator = set.iterator();
+        // System.out.print("possible val At index="+li.get(i)+" = ");
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + " ");
         }
-        return true;
+        System.out.println();
+    }
+
+    // forTesting
+    void printMap() {
+        for (Map.Entry<String, HashSet<Integer>> entry : map.entrySet()) {
+            // if(entry.getKey().split(" ")[0].equals("8")){
+            System.out.print("possible val At index=" + entry.getKey() + " = ");
+            printSet(entry.getValue());
+            // }
+        }
     }
 }
