@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class SolvingMethods implements SudokuSolvingMethods {
         char[][] grid = new char[9][9];
@@ -8,6 +9,7 @@ public class SolvingMethods implements SudokuSolvingMethods {
     int[] boxes = new int[9];
 
     Logic logic;
+    Strategy strategy;
 
     boolean valid;
 
@@ -18,8 +20,20 @@ public class SolvingMethods implements SudokuSolvingMethods {
             int ele=hset.iterator().next();
             //add the unique element to the grid
             grid[r][c] = (char) (ele+'0');
+
+            //testing
+            /* 
+            System.out.println("In sm, r=7 c = 8");
+            if(map.containsKey(7+" "+8)){
+                printSet(map.get(7+" "+8));
+            }
+            */
+            
             //removes the filled element from the possibilites in the empty cells of the row,col,box
             this.logic.removeEle(r, c,ele);
+
+            //in testing(npStrategy) to remove element from empty cells mapped in the map
+            map.remove(r+" "+c);
     }
 
     //returns the box which already has the maximum elements
@@ -69,6 +83,16 @@ public class SolvingMethods implements SudokuSolvingMethods {
             }
         }
         return true;
+    }
+
+    //for testing
+    void printSet(HashSet<Integer> set) {
+        Iterator<Integer> iterator = set.iterator();
+        // System.out.print("possible val At index="+li.get(i)+" = ");
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + " ");
+        }
+        System.out.println();
     }
 
 }

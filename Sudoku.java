@@ -7,8 +7,9 @@ class Sudoku {
         Scanner sc = new Scanner(System.in);
         System.out.println("kindly enter the grid data");
         for (int i = 0; i < 9; i++) {
+            String s =sc.nextLine();
             for (int j = 0; j < 9; j++) {
-                grid[i][j] = (char) (sc.nextInt() + '0');
+                grid[i][j] = s.charAt(j);
             }
         }
         sc.close();
@@ -49,6 +50,7 @@ class Sudoku {
             Solve s = new Solve();
             s.solve();
             printGrid();
+            s.printMap();
         }
         sc.close();
     }
